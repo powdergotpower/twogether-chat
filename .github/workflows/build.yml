@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # 1. Checkout repo
+      # 1. Checkout repository
       - uses: actions/checkout@v4
 
       # 2. Setup Node.js
@@ -29,11 +29,11 @@ jobs:
       - name: Install Capacitor CLI
         run: npm install -g @capacitor/cli
 
-      # 5. Install React Native CLI globally (needed to generate PackageList.java)
+      # 5. Install React Native CLI globally (if you use React Native)
       - name: Install React Native CLI
         run: npm install -g react-native-cli
 
-      # 6. Build web project (Vite)
+      # 6. Build web project
       - name: Build web project
         run: npm run build
         env:
@@ -53,36 +53,30 @@ jobs:
 
       # 9. Add Android platform
       - name: Add Android platform
-        run: npx cap add android --no-install
+        run: npx cap add android
 
       # 10. Sync Capacitor plugins
       - name: Sync Capacitor
         run: npx cap sync android
 
-      # 11. Generate PackageList.java if React Native is used
-      - name: Generate React Native PackageList
-        run: |
-          cd android
-          ./gradlew :app:generateReleaseBuildConfig
-
-      # 12. Fix MainActivity name
+      # 11. Fix MainActivity name
       - name: Fix MainActivity name
         run: |
           sed -i 's/android:name="MainActivity.kt"/android:name=".MainActivity"/' android/app/src/main/AndroidManifest.xml
           sed -i 's/android:name="MainActivity.java"/android:name=".MainActivity"/' android/app/src/main/AndroidManifest.xml
 
-      # 13. Build the Android APK
+      # 12. Build the Android APK
       - name: Build Android APK
         run: cd android && ./gradlew assembleRelease --stacktrace --info
 
-      # 14. Upload web build
+      # 13. Upload web build
       - name: Upload Web Build
         uses: actions/upload-artifact@v4
         with:
           name: dist
           path: dist/
 
-      # 15. Upload Android APK
+      # 14. Upload Android APK
       - name: Upload Android APK
         uses: actions/upload-artifact@v4
         with:
