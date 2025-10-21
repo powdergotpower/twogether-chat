@@ -22,16 +22,18 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      # 👇 Install Capacitor CLI globally (fixes the "could not determine executable" error)
+      # Install Capacitor CLI globally
       - name: Install Capacitor CLI
         run: npm install -g @capacitor/cli
 
+      # Build your web project
       - name: Build project
         run: npm run build
         env:
           VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
           VITE_SUPABASE_PUBLISHABLE_KEY: ${{ secrets.VITE_SUPABASE_PUBLISHABLE_KEY }}
 
+      # Setup Java and Android SDK
       - name: Setup Java
         uses: actions/setup-java@v4
         with:
@@ -41,21 +43,32 @@ jobs:
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
 
+      # Add Android platform dynamically
       - name: Add Android platform
-        run: npx cap add android
+        run: npx cap add android --no-install
 
+      # Fix AndroidManifest.xml to avoid invalid activity name error
+      - name: Fix MainActivity name
+        run: |
+          sed -i 's/android:name="MainActivity.kt"/android:name=".MainActivity"/' android/app/src/main/AndroidManifest.xml
+          sed -i 's/android:name="MainActivity.java"/android:name=".MainActivity"/' android/app/src/main/AndroidManifest.xml
+
+      # Sync Capacitor plugins
       - name: Sync Capacitor
         run: npx cap sync android
 
+      # Build the APK
       - name: Build Android APK
-        run: cd android && ./gradlew assembleRelease
+        run: cd android && ./gradlew assembleRelease --stacktrace --info
 
+      # Upload web build
       - name: Upload Web Build
         uses: actions/upload-artifact@v4
         with:
           name: dist
           path: dist/
 
+      # Upload Android APK
       - name: Upload Android APK
         uses: actions/upload-artifact@v4
         with:
