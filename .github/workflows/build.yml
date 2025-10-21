@@ -45,7 +45,7 @@ jobs:
 
       # Add Android platform dynamically
       - name: Add Android platform
-        run: npx cap add android --no-install
+        run: npx cap add android
 
       # Fix AndroidManifest.xml to avoid invalid activity name error
       - name: Fix MainActivity name
