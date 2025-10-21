@@ -1,73 +1,131 @@
-# Welcome to your Lovable project
+# Ansh & Noahh Chat App
 
-## Project info
+A beautiful real-time chat application built for two users with support for text messages, voice notes, and image sharing.
 
-**URL**: https://lovable.dev/projects/379ff503-c79d-4034-abf3-a1f4bca0d2d5
+## Features
 
-## How can I edit this code?
+- 🔒 App password protection (1958)
+- 👥 Two-user authentication system
+- 💬 Real-time text messaging
+- 🎤 Voice note recording and playback
+- 📸 Image sharing with previews
+- ✨ Beautiful animations and gradients
+- 📱 Mobile-ready with Capacitor
 
-There are several ways of editing your application.
+## Setup
 
-**Use Lovable**
+### Prerequisites
+- Node.js 18+ installed
+- npm or yarn
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/379ff503-c79d-4034-abf3-a1f4bca0d2d5) and start prompting.
+### Installation
 
-Changes made via Lovable will be committed automatically to this repo.
+```bash
+# Install dependencies
+npm install
 
-**Use your preferred IDE**
-
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
-
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
-
-Follow these steps:
-
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
+# Run development server
 npm run dev
 ```
 
-**Edit a file directly in GitHub**
+### Building for Production
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+```bash
+# Build the app
+npm run build
+```
 
-**Use GitHub Codespaces**
+## Capacitor Mobile Setup
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+To run on iOS or Android:
 
-## What technologies are used for this project?
+1. Export to your GitHub repository via the "Export to Github" button
+2. Clone the project from your GitHub repository
+3. Run `npm install` to install dependencies
+4. Add iOS and/or Android platforms:
+   ```bash
+   npx cap add ios
+   npx cap add android
+   ```
+5. Update native platform dependencies:
+   ```bash
+   npx cap update ios
+   # or
+   npx cap update android
+   ```
+6. Build the project:
+   ```bash
+   npm run build
+   ```
+7. Sync with native platforms:
+   ```bash
+   npx cap sync
+   ```
+8. Run on device/emulator:
+   ```bash
+   npx cap run android
+   # or
+   npx cap run ios  # Requires Mac with Xcode
+   ```
 
-This project is built with:
+Note: After pulling updates from GitHub, always run `npx cap sync` to sync changes to native platforms.
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+## User Credentials
 
-## How can I deploy this project?
+### App Password
+Password: `1958`
 
-Simply open [Lovable](https://lovable.dev/projects/379ff503-c79d-4034-abf3-a1f4bca0d2d5) and click on Share -> Publish.
+### User 1 (Ansh)
+- Username: `Ansh`
+- Password: `1Ajsidhu#`
 
-## Can I connect a custom domain to my Lovable project?
+### User 2 (Noahh)
+- Username: `Noahh`
+- Password: `Noahh12`
 
-Yes, you can!
+## GitHub Actions
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+The project includes a GitHub Actions workflow that automatically builds the app on every push to the main branch.
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+Make sure to add these secrets to your GitHub repository:
+- `VITE_SUPABASE_URL`
+- `VITE_SUPABASE_PUBLISHABLE_KEY`
+
+## Tech Stack
+
+- **Frontend**: React + TypeScript + Vite
+- **UI**: Tailwind CSS + shadcn/ui
+- **Backend**: Lovable Cloud (Supabase)
+- **Mobile**: Capacitor
+- **Real-time**: Supabase Realtime
+- **Storage**: Supabase Storage
+
+## Project Structure
+
+```
+├── src/
+│   ├── components/
+│   │   ├── ChatInterface.tsx    # Main chat UI
+│   │   ├── LoginForm.tsx        # User login
+│   │   ├── PasswordLock.tsx     # App password screen
+│   │   ├── MessageBubble.tsx    # Message display
+│   │   ├── VoiceRecorder.tsx    # Voice note recording
+│   │   └── ImageUpload.tsx      # Image upload
+│   ├── pages/
+│   │   └── Index.tsx            # Main app entry
+│   └── integrations/
+│       └── supabase/            # Backend integration
+├── capacitor.config.ts          # Capacitor configuration
+└── .github/
+    └── workflows/
+        └── build.yml            # CI/CD workflow
+```
+
+## Development
+
+The app uses Lovable Cloud for backend services including:
+- Database for storing messages and users
+- Real-time subscriptions for instant message delivery
+- Storage for voice notes and images
+
+All backend features are automatically provisioned and require no external accounts.
