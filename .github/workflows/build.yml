@@ -11,64 +11,78 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      # 1. Checkout repo
       - uses: actions/checkout@v4
 
+      # 2. Setup Node.js
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '18'
           cache: 'npm'
 
+      # 3. Install npm dependencies
       - name: Install dependencies
         run: npm ci
 
-      # Install Capacitor CLI globally
+      # 4. Install Capacitor CLI globally
       - name: Install Capacitor CLI
         run: npm install -g @capacitor/cli
 
-      # Build your web project
-      - name: Build project
+      # 5. Install React Native CLI globally (needed to generate PackageList.java)
+      - name: Install React Native CLI
+        run: npm install -g react-native-cli
+
+      # 6. Build web project (Vite)
+      - name: Build web project
         run: npm run build
         env:
           VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
           VITE_SUPABASE_PUBLISHABLE_KEY: ${{ secrets.VITE_SUPABASE_PUBLISHABLE_KEY }}
 
-      # Setup Java and Android SDK
+      # 7. Setup Java
       - name: Setup Java
         uses: actions/setup-java@v4
         with:
           distribution: 'zulu'
           java-version: '21'
 
+      # 8. Setup Android SDK
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
 
-      # Add Android platform dynamically
+      # 9. Add Android platform
       - name: Add Android platform
-        run: npx cap add android
+        run: npx cap add android --no-install
 
-      # Fix AndroidManifest.xml to avoid invalid activity name error
+      # 10. Sync Capacitor plugins
+      - name: Sync Capacitor
+        run: npx cap sync android
+
+      # 11. Generate PackageList.java if React Native is used
+      - name: Generate React Native PackageList
+        run: |
+          cd android
+          ./gradlew :app:generateReleaseBuildConfig
+
+      # 12. Fix MainActivity name
       - name: Fix MainActivity name
         run: |
           sed -i 's/android:name="MainActivity.kt"/android:name=".MainActivity"/' android/app/src/main/AndroidManifest.xml
           sed -i 's/android:name="MainActivity.java"/android:name=".MainActivity"/' android/app/src/main/AndroidManifest.xml
 
-      # Sync Capacitor plugins
-      - name: Sync Capacitor
-        run: npx cap sync android
-
-      # Build the APK
+      # 13. Build the Android APK
       - name: Build Android APK
         run: cd android && ./gradlew assembleRelease --stacktrace --info
 
-      # Upload web build
+      # 14. Upload web build
       - name: Upload Web Build
         uses: actions/upload-artifact@v4
         with:
           name: dist
           path: dist/
 
-      # Upload Android APK
+      # 15. Upload Android APK
       - name: Upload Android APK
         uses: actions/upload-artifact@v4
         with:
