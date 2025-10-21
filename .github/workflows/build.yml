@@ -28,8 +28,32 @@ jobs:
         VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
         VITE_SUPABASE_PUBLISHABLE_KEY: ${{ secrets.VITE_SUPABASE_PUBLISHABLE_KEY }}
     
-    - name: Upload build artifacts
+    - name: Setup Java
+      uses: actions/setup-java@v4
+      with:
+        distribution: 'zulu'
+        java-version: '17'
+    
+    - name: Setup Android SDK
+      uses: android-actions/setup-android@v3
+    
+    - name: Add Android platform
+      run: npx cap add android
+    
+    - name: Sync Capacitor
+      run: npx cap sync android
+    
+    - name: Build Android APK
+      run: cd android && ./gradlew assembleRelease
+    
+    - name: Upload Web Build
       uses: actions/upload-artifact@v4
       with:
         name: dist
         path: dist/
+    
+    - name: Upload Android APK
+      uses: actions/upload-artifact@v4
+      with:
+        name: android-apk
+        path: android/app/build/outputs/apk/release/app-release-unsigned.apk
