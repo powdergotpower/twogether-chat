@@ -29,56 +29,57 @@ jobs:
       - name: Install Capacitor CLI
         run: npm install -g @capacitor/cli
 
-      # 5. Install React Native CLI globally (if you use React Native)
-      - name: Install React Native CLI
-        run: npm install -g react-native-cli
-
-      # 6. Build web project
+      # 5. Build web project
       - name: Build web project
         run: npm run build
         env:
           VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
           VITE_SUPABASE_PUBLISHABLE_KEY: ${{ secrets.VITE_SUPABASE_PUBLISHABLE_KEY }}
 
-      # 7. Setup Java
+      # 6. Setup Java
       - name: Setup Java
         uses: actions/setup-java@v4
         with:
           distribution: 'zulu'
           java-version: '21'
 
-      # 8. Setup Android SDK
+      # 7. Setup Android SDK
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
 
-      # 9. Add Android platform
+      # 8. Add Android platform (safe repeatable)
       - name: Add Android platform
-        run: npx cap add android
+        run: |
+          if [ ! -d "android" ]; then
+            npx cap add android
+          fi
 
-      # 10. Sync Capacitor plugins
+      # 9. Sync Capacitor plugins
       - name: Sync Capacitor
         run: npx cap sync android
 
-      # 11. Fix MainActivity name
+      # 10. Fix Android Manifest (safe fallback)
       - name: Fix MainActivity name
         run: |
-          sed -i 's/android:name="MainActivity.kt"/android:name=".MainActivity"/' android/app/src/main/AndroidManifest.xml
-          sed -i 's/android:name="MainActivity.java"/android:name=".MainActivity"/' android/app/src/main/AndroidManifest.xml
+          if [ -f "android/app/src/main/AndroidManifest.xml" ]; then
+            sed -i 's/android:name="MainActivity.kt"/android:name=".MainActivity"/' android/app/src/main/AndroidManifest.xml || true
+            sed -i 's/android:name="MainActivity.java"/android:name=".MainActivity"/' android/app/src/main/AndroidManifest.xml || true
+          fi
 
-      # 12. Build the Android APK
+      # 11. Build the Android APK (debug to avoid signing issues)
       - name: Build Android APK
-        run: cd android && ./gradlew assembleRelease --stacktrace --info
+        run: cd android && ./gradlew assembleDebug --stacktrace --info
 
-      # 13. Upload web build
+      # 12. Upload Web Build
       - name: Upload Web Build
         uses: actions/upload-artifact@v4
         with:
-          name: dist
+          name: web-dist
           path: dist/
 
-      # 14. Upload Android APK
+      # 13. Upload Android APK
       - name: Upload Android APK
         uses: actions/upload-artifact@v4
         with:
           name: android-apk
-          path: android/app/build/outputs/apk/release/app-release-unsigned.apk
+          path: android/app/build/outputs/apk/debug/app-debug.apk
