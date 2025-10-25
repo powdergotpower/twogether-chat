@@ -47,6 +47,12 @@ jobs:
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
 
+      # 7.1 Install Android SDK Platform 35 and Build Tools
+      - name: Install Android 35 SDK components
+        run: |
+          yes | sdkmanager --licenses
+          sdkmanager "platform-tools" "platforms;android-35" "build-tools;35.0.0"
+
       # 8. Add Android platform (safe repeatable)
       - name: Add Android platform
         run: |
